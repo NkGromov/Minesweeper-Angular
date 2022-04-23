@@ -1,0 +1,10 @@
+<button
+  class="sapperCell"
+  [ngClass]="{
+    'sapperCell--active': !isHide && cell !== 100,
+    'sapperCell--fail': !isHide && cell === 100
+  }"
+  (click)="changeHide()"
+>
+  {{ !isHide && cell && cell !== 100 ? cell : "" }}
+</button>
