@@ -1,4 +1,7 @@
 import { Component, Input } from '@angular/core';
+import { Event } from '@angular/router';
+import { Scheme } from 'src/app/models/game';
+import { GameService } from 'src/app/services/game.service';
 
 @Component({
   selector: 'sapper-cell',
@@ -6,11 +9,19 @@ import { Component, Input } from '@angular/core';
   styleUrls: ['./sapper-cell.component.sass'],
 })
 export class SapperCellComponent {
-  @Input() cell: number = 0;
-  public isHide: boolean = true;
-  constructor() {}
+  @Input() cell: Scheme;
+  @Input() numberCell: number = 0;
+  @Input() numberRow: number = 0;
+  constructor(private gameService: GameService) {
+    this.cell = { value: 0, isHide: true, isSetFlag: false };
+  }
 
   changeHide(): void {
-    this.isHide = !this.isHide;
+    this.gameService.onCellClick(this.numberCell, this.numberRow);
+  }
+
+  setFlag(event: any): void {
+    event.preventDefault();
+    this.gameService.onSetFlag(this.numberCell, this.numberRow);
   }
 }

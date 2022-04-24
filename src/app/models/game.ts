@@ -6,5 +6,11 @@ export interface Game {
 
 export interface SapperScheme {
   id: number;
-  scheme: Array<Array<number>>;
+  scheme: Array<Array<Scheme>>;
+}
+
+export interface Scheme {
+  value: number;
+  isHide: boolean;
+  isSetFlag: boolean;
 }

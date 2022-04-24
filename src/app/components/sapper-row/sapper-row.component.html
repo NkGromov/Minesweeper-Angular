@@ -1,3 +1,8 @@
 <div class="sapperRow">
-  <sapper-cell *ngFor="let cell of row" [cell]="cell"></sapper-cell>
+  <sapper-cell
+    *ngFor="let cell of row; let index = index"
+    [cell]="cell"
+    [numberCell]="index"
+    [numberRow]="numberRow"
+  ></sapper-cell>
 </div>

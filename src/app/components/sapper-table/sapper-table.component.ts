@@ -1,7 +1,6 @@
-import { Component, OnInit } from '@angular/core';
-import { APIResponse } from 'src/app/models/api';
+import { Component, Input, OnInit } from '@angular/core';
 import { Game, SapperScheme } from 'src/app/models/game';
-import { gameApiService } from 'src/app/services/gameApiService';
+import { GameService } from 'src/app/services/game.service';
 
 @Component({
   selector: 'sapper-table',
@@ -9,14 +8,14 @@ import { gameApiService } from 'src/app/services/gameApiService';
   styleUrls: ['./sapper-table.component.sass'],
 })
 export class SapperTableComponent implements OnInit {
-  game: SapperScheme;
-  constructor(private gameApi: gameApiService) {
-    this.game = { id: 0, scheme: [] };
+  constructor(public gameService: GameService) {}
+
+  refreshGame(): void {
+    if (this.gameService.isOver) this.gameService.getGame(1);
+    else this.gameService.refreshGame(1);
   }
 
   ngOnInit(): void {
-    this.gameApi
-      .getGame(1)
-      .subscribe((response: Game) => (this.game = response.sapperSchemes));
+    this.gameService.getGame(1);
   }
 }
