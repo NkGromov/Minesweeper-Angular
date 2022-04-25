@@ -1,6 +1,6 @@
 import { Component, Input } from '@angular/core';
 import { Event } from '@angular/router';
-import { Scheme } from 'src/app/models/game';
+import { SchemeWithState } from 'src/app/models/game';
 import { GameService } from 'src/app/services/game.service';
 
 @Component({
@@ -9,7 +9,7 @@ import { GameService } from 'src/app/services/game.service';
   styleUrls: ['./sapper-cell.component.sass'],
 })
 export class SapperCellComponent {
-  @Input() cell: Scheme;
+  @Input() cell: SchemeWithState;
   @Input() numberCell: number = 0;
   @Input() numberRow: number = 0;
   constructor(private gameService: GameService) {

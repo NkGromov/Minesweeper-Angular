@@ -1,23 +1,22 @@
-import { HttpClient, HttpParams } from '@angular/common/http';
+import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
-import { forkJoin, Observable } from 'rxjs';
-import { map } from 'rxjs/operators';
 import { environment as env } from 'src/environments/environment';
-import { Game, Scheme } from '../models/game';
+import { Game, SchemeWithState } from '../models/game';
 
 @Injectable({
   providedIn: 'root',
 })
 export class GameService {
-  game: Game;
+  game: Game<SchemeWithState>;
   isOver = false;
+  countOfCell = 10 * 10 - 10;
   constructor(private http: HttpClient) {
     this.game = { id: 0, isWin: false, sapperSchemes: { id: 0, scheme: [] } };
   }
 
   getGame(userId: number, width: number = 10, height: number = 10) {
     this.http
-      .post<Game>(
+      .post<Game<number>>(
         `${env.apiBase}/games/create`,
         {},
         {
@@ -28,27 +27,14 @@ export class GameService {
           },
         }
       )
-      .subscribe((response: Game) => {
-        const scheme: Scheme[][] = [];
-        this.game = response;
-        response.sapperSchemes.scheme.forEach((row) => {
-          scheme.push(
-            // @ts-ignore
-            row.map((value) => ({
-              value: value,
-              isHide: true,
-              isSetFlag: false,
-            }))
-          );
-        });
-        this.game.sapperSchemes.scheme = scheme;
-        this.isOver = false;
+      .subscribe((response: Game<number>) => {
+        this.game = this.gamesStart(response);
       });
   }
 
   refreshGame(userId: number, width: number = 10, height: number = 10) {
     this.http
-      .post<Game>(
+      .post<Game<number>>(
         `${env.apiBase}/games/refresh`,
         {},
         {
@@ -61,26 +47,14 @@ export class GameService {
           },
         }
       )
-      .subscribe((response: Game) => {
-        const scheme: Scheme[][] = [];
-        this.game = response;
-        response.sapperSchemes.scheme.forEach((row) => {
-          scheme.push(
-            // @ts-ignore
-            row.map((value) => ({
-              value: value,
-              isHide: true,
-              isSetFlag: false,
-            }))
-          );
-        });
-        this.game.sapperSchemes.scheme = scheme;
-        this.isOver = false;
+      .subscribe((response: Game<number>) => {
+        this.game = this.gamesStart(response);
       });
   }
 
   endGame() {
-    this.http.put<Game>(
+    this.isOver = true;
+    this.http.put<Game<number>>(
       `${env.apiBase}/games/win`,
       {},
       {
@@ -114,7 +88,7 @@ export class GameService {
               this.game.sapperSchemes.scheme[i][j].isHide = false;
           }
         }
-        this.isOver = true;
+
         this.endGame();
         break;
 
@@ -124,16 +98,48 @@ export class GameService {
         break;
     }
   }
+
+  private gamesStart(response: Game<number>): Game<SchemeWithState> {
+    this.isOver = false;
+    this.countOfCell = 10 * 10 - 10;
+    return this.convertToGameState(response);
+  }
+
+  private convertToGameState(response: Game<number>): Game<SchemeWithState> {
+    return {
+      id: response.id,
+      isWin: response.isWin,
+      sapperSchemes: {
+        id: response.sapperSchemes.id,
+        scheme: response.sapperSchemes.scheme.map((row) =>
+          row.map((value) => ({
+            value: value,
+            isHide: true,
+            isSetFlag: false,
+          }))
+        ),
+      },
+    };
+  }
+
   private setIsHideInLoop(x: number, y: number): void {
+    console.log(this.countOfCell);
     const currentCell = this.game.sapperSchemes.scheme[y][x];
     if (
       (currentCell.value === 0 || currentCell.value < 100) &&
-      !currentCell.isSetFlag
-    )
+      !currentCell.isSetFlag &&
+      this.game.sapperSchemes.scheme[y][x].isHide
+    ) {
       this.game.sapperSchemes.scheme[y][x].isHide = false;
+      --this.countOfCell;
+      if (this.countOfCell <= 0) {
+        this.isOver = true;
+        alert('you win :)');
+      }
+    }
   }
 
-  private loopLeft(row: Scheme[], y: number, x: number): void {
+  private loopLeft(row: SchemeWithState[], y: number, x: number): void {
     for (let j = x; j >= 0; j--) {
       const currentCell = row[j];
       if (currentCell.value === 100) break;
@@ -141,7 +147,7 @@ export class GameService {
     }
   }
 
-  private loopRight(row: Scheme[], y: number, x: number): void {
+  private loopRight(row: SchemeWithState[], y: number, x: number): void {
     for (let j = x; j < row.length; j++) {
       const currentCell = row[j];
       if (currentCell.value === 100) break;
@@ -149,7 +155,7 @@ export class GameService {
     }
   }
 
-  private loopDown(scheme: Scheme[][], y: number, x: number): void {
+  private loopDown(scheme: SchemeWithState[][], y: number, x: number): void {
     for (let i = y; i < scheme.length; i++) {
       const row = scheme[i];
       this.loopRight(row, i, x);
@@ -157,7 +163,7 @@ export class GameService {
     }
   }
 
-  private loopUp(scheme: Scheme[][], y: number, x: number): void {
+  private loopUp(scheme: SchemeWithState[][], y: number, x: number): void {
     for (let i = y; i >= 0; i--) {
       const row = scheme[i];
       this.loopRight(row, i, x);

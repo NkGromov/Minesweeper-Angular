@@ -1,5 +1,5 @@
 import { Component, Input } from '@angular/core';
-import { Scheme } from 'src/app/models/game';
+import { SchemeWithState } from 'src/app/models/game';
 
 @Component({
   selector: 'sapper-row',
@@ -7,7 +7,7 @@ import { Scheme } from 'src/app/models/game';
   styleUrls: ['./sapper-row.component.sass'],
 })
 export class SapperRowComponent {
-  @Input() row: Array<Scheme> = [];
+  @Input() row: Array<SchemeWithState> = [];
   @Input() numberRow: number = 0;
   constructor() {}
 }
