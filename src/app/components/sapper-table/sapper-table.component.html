@@ -1,7 +1,8 @@
-<sapper-row
-  *ngFor="let i of gameService.game.sapperSchemes.scheme; let index = index"
-  [row]="i"
-  [numberRow]="index"
-  class="table"
-></sapper-row>
-<button class="button" (click)="refreshGame()">Обновить</button>
+<div class="table">
+  <sapper-row
+    *ngFor="let i of gameService.game.sapperSchemes.scheme; let index = index"
+    [row]="i"
+    [numberRow]="index"
+  ></sapper-row>
+  <button class="button" (click)="refreshGame()">Обновить</button>
+</div>

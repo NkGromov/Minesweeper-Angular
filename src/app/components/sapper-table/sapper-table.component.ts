@@ -1,6 +1,6 @@
 import { Component, Input, OnInit } from '@angular/core';
 import { Game, SapperScheme } from 'src/app/models/game';
-import { GameService } from 'src/app/services/game.service';
+import { GameLogicService } from 'src/app/services/gameLogic.service';
 import { UserService } from 'src/app/services/user.service';
 
 @Component({
@@ -10,7 +10,7 @@ import { UserService } from 'src/app/services/user.service';
 })
 export class SapperTableComponent implements OnInit {
   constructor(
-    public gameService: GameService,
+    public gameService: GameLogicService,
     private userService: UserService
   ) {}
 

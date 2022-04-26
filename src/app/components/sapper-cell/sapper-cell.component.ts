@@ -1,7 +1,7 @@
 import { Component, Input } from '@angular/core';
 import { Event } from '@angular/router';
 import { SchemeWithState } from 'src/app/models/game';
-import { GameService } from 'src/app/services/game.service';
+import { GameLogicService } from 'src/app/services/gameLogic.service';
 
 @Component({
   selector: 'sapper-cell',
@@ -12,7 +12,7 @@ export class SapperCellComponent {
   @Input() cell: SchemeWithState;
   @Input() numberCell: number = 0;
   @Input() numberRow: number = 0;
-  constructor(private gameService: GameService) {
+  constructor(private gameService: GameLogicService) {
     this.cell = { value: 0, isHide: true, isSetFlag: false };
   }
 
