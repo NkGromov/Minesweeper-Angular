@@ -1,17 +1,19 @@
 <div class="table">
   <div
-    *ngFor="
-      let row of gameService.game.sapperSchemes.scheme;
-      let numberRow = index
-    "
+    *ngFor="let row of game.sapperSchemes.scheme; let numberRow = index"
     class="row"
   >
     <sapper-cell
       *ngFor="let cell of row; let numberCell = index"
-      [cell]="cell"
       [numberCell]="numberCell"
       [numberRow]="numberRow"
+      [nearlyIsOpen]="false"
+      [value]="cell"
+      [isOver]="isOver"
+      [isWin]="isWin"
+      (endGame)="endGame($event)"
+      (decrementCountOfCell)="decrementCountOfCell()"
     ></sapper-cell>
   </div>
-  <button class="button" (click)="refreshGame()">Обновить</button>
+  <button class="button" (click)="startGame()">Обновить</button>
 </div>

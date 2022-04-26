@@ -1,17 +1,10 @@
-export type Game<T> = {
+export type Game = {
   id: number;
   isWin: boolean;
-  sapperSchemes: SapperScheme<T>;
-}
+  sapperSchemes: SapperScheme;
+};
 
-export type SapperScheme<T> = {
+export type SapperScheme = {
   id: number;
-  scheme: Array<Array<T>>;
-}
-
-export type SchemeWithState  = {
-  value: number;
-  isHide: boolean;
-  isSetFlag: boolean;
-}
-
+  scheme: Array<Array<number>>;
+};

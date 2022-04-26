@@ -7,15 +7,15 @@ import { Game } from '../models/game';
 @Injectable({
   providedIn: 'root',
 })
-export class GameApiService {
+export class GameService {
   constructor(private http: HttpClient) {}
 
   getGame(
     userId: number,
-    width: number = 10,
-    height: number = 10
-  ): Observable<Game<number>> {
-    return this.http.post<Game<number>>(
+    width: number = 5,
+    height: number = 5
+  ): Observable<Game> {
+    return this.http.post<Game>(
       `${env.apiBase}/games/create`,
       {},
       {
@@ -31,10 +31,10 @@ export class GameApiService {
   refreshGame(
     userId: number,
     gameId: number,
-    width: number = 10,
-    height: number = 10
-  ): Observable<Game<number>> {
-    return this.http.post<Game<number>>(
+    width: number = 5,
+    height: number = 5
+  ): Observable<Game> {
+    return this.http.post<Game>(
       `${env.apiBase}/games/refresh`,
       {},
       {
@@ -49,8 +49,8 @@ export class GameApiService {
     );
   }
 
-  changeWin(gameId: number, isWin: boolean): Observable<Game<number>> {
-    return this.http.put<Game<number>>(
+  changeWin(gameId: number, isWin: boolean): Observable<Game> {
+    return this.http.put<Game>(
       `${env.apiBase}/games/win`,
       {},
       {
