@@ -23,9 +23,13 @@ export class SapperTableComponent implements OnInit, DoCheck {
     private userService: UserService
   ) {}
 
+  initVariable(isOver: boolean, isWin: boolean): void {
+    this.isOver = isOver;
+    this.isWin = isWin;
+  }
+
   startGame(): void {
-    this.isOver = false;
-    this.isWin = false;
+    this.initVariable(false, false);
     this.countOfCell = 5 * 5 - 3;
     this.gameService
       .getGame(this.userService.userId)
@@ -37,8 +41,7 @@ export class SapperTableComponent implements OnInit, DoCheck {
   }
 
   endGame(isWin: boolean) {
-    this.isOver = true;
-    this.isWin = isWin;
+    this.initVariable(true, isWin);
     this.gameService.changeWin(this.game.id, isWin).subscribe();
     alert(isWin);
   }
