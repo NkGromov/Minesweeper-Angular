@@ -8,12 +8,13 @@ import { Component, DoCheck, EventEmitter, Input, Output } from '@angular/core';
 export class SapperCellComponent implements DoCheck {
   @Input() numberCell = 0;
   @Input() numberRow = 0;
-  @Input() nearlyIsOpen = false;
   @Input() isOver = false;
   @Input() isWin = false;
   @Input() value = 0;
+  @Input() isOpen = false;
   @Output() endGame = new EventEmitter<boolean>();
   @Output() decrementCountOfCell = new EventEmitter();
+  @Output() openNearbyCells = new EventEmitter<{ x: number; y: number }>();
   isHidden = true;
   isFlag = false;
 
@@ -26,7 +27,10 @@ export class SapperCellComponent implements DoCheck {
   }
 
   onCellClick(value: number): void {
+    if (!this.isHidden || this.isFlag) return;
     this.changeHiddenCell();
+    if (value === 0)
+      this.openNearbyCells.emit({ x: this.numberCell, y: this.numberRow });
     if (value === 100) this.endGame.emit(false);
   }
 
@@ -38,5 +42,6 @@ export class SapperCellComponent implements DoCheck {
   ngDoCheck(): void {
     if (this.isOver && !this.isWin && this.value === 100)
       this.changeHiddenCell();
+    if (this.isOpen) this.onCellClick(this.value);
   }
 }

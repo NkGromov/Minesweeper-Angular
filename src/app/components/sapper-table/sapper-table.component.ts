@@ -17,7 +17,9 @@ export class SapperTableComponent implements OnInit, DoCheck {
   isOver = false;
   isWin = false;
   countOfCell = 5 * 5 - 3;
-
+  openCells: Array<Array<boolean>> = this.game.sapperSchemes.scheme.map((row) =>
+    row.map(() => false)
+  );
   constructor(
     public gameService: GameService,
     private userService: UserService
@@ -33,7 +35,12 @@ export class SapperTableComponent implements OnInit, DoCheck {
     this.countOfCell = 5 * 5 - 3;
     this.gameService
       .getGame(this.userService.userId)
-      .subscribe((response: Game) => (this.game = response));
+      .subscribe((response: Game) => {
+        this.game = response;
+        this.openCells = this.game.sapperSchemes.scheme.map((row) =>
+          row.map(() => false)
+        );
+      });
   }
 
   decrementCountOfCell(): void {
@@ -44,6 +51,24 @@ export class SapperTableComponent implements OnInit, DoCheck {
     this.initVariable(true, isWin);
     this.gameService.changeWin(this.game.id, isWin).subscribe();
     alert(isWin);
+  }
+
+  openNearbyCells(start: { x: number; y: number }): void {
+    for (let row = -1; row <= 1; row++) {
+      for (let coll = -1; coll <= 1; coll++) {
+        const rowIndex = row + start.y;
+        const collIndex = coll + start.x;
+        if (
+          typeof this.openCells[rowIndex] === 'object' &&
+          typeof this.openCells[rowIndex][collIndex] === 'boolean' &&
+          this.openCells[rowIndex][collIndex] === false
+        ) {
+          this.openCells[rowIndex][collIndex] = true;
+          if (this.game.sapperSchemes.scheme[rowIndex][collIndex] === 0)
+            this.openNearbyCells({ x: collIndex, y: rowIndex });
+        }
+      }
+    }
   }
 
   ngOnInit(): void {

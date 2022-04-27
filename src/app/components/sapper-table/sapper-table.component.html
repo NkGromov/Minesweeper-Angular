@@ -7,12 +7,13 @@
       *ngFor="let cell of row; let numberCell = index"
       [numberCell]="numberCell"
       [numberRow]="numberRow"
-      [nearlyIsOpen]="false"
       [value]="cell"
       [isOver]="isOver"
       [isWin]="isWin"
+      [isOpen]="openCells[numberRow] && openCells[numberRow][numberCell]"
       (endGame)="endGame($event)"
       (decrementCountOfCell)="decrementCountOfCell()"
+      (openNearbyCells)="openNearbyCells($event)"
     ></sapper-cell>
   </div>
   <button class="button" (click)="startGame()">Обновить</button>
