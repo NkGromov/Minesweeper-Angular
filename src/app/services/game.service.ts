@@ -28,27 +28,6 @@ export class GameService {
     );
   }
 
-  refreshGame(
-    userId: number,
-    gameId: number,
-    width: number = 5,
-    height: number = 5
-  ): Observable<Game> {
-    return this.http.post<Game>(
-      `${env.apiBase}/games/refresh`,
-      {},
-      {
-        params: {
-          width,
-          height,
-          userId,
-          gameId,
-          isWin: false,
-        },
-      }
-    );
-  }
-
   changeWin(gameId: number, isWin: boolean): Observable<Game> {
     return this.http.put<Game>(
       `${env.apiBase}/games/win`,
