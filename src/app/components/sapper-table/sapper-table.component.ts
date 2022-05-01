@@ -1,5 +1,5 @@
 import { Component, DoCheck, OnInit } from '@angular/core';
-import { Game } from 'src/app/models/game';
+import { CellWithState, Coords, Game } from 'src/app/models/game';
 import { GameService } from 'src/app/services/game.service';
 import { UserService } from 'src/app/services/user.service';
 
@@ -9,66 +9,114 @@ import { UserService } from 'src/app/services/user.service';
   styleUrls: ['./sapper-table.component.sass'],
 })
 export class SapperTableComponent implements OnInit, DoCheck {
-  game: Game = {
-    id: 0,
-    isWin: false,
-    sapperSchemes: { id: 0, scheme: [] },
-  };
+  game = {} as Game;
   isOver = false;
   isWin = false;
-  countOfCell = 5 * 5 - 3;
-  openCells: Array<Array<boolean>> = this.game.sapperSchemes.scheme.map((row) =>
-    row.map(() => false)
-  );
+  countOfCell = 100;
+  cellMap = [] as Array<Array<CellWithState>>;
+
   constructor(
     public gameService: GameService,
     private userService: UserService
   ) {}
 
-  initVariable(isOver: boolean, isWin: boolean): void {
-    this.isOver = isOver;
-    this.isWin = isWin;
-  }
-
-  startGame(): void {
+  public startGame(): void {
     this.initVariable(false, false);
-    this.countOfCell = 5 * 5 - 3;
+    this.countOfCell = 100;
     this.gameService
       .getGame(this.userService.userId)
       .subscribe((response: Game) => {
         this.game = response;
-        this.openCells = this.game.sapperSchemes.scheme.map((row) =>
-          row.map(() => false)
+        this.countOfCell = 10 * 10 - response.sapperSchemes.countBombs;
+        this.cellMap = this.game.sapperSchemes.scheme.map((row, rowIndex) =>
+          row.map((cell, cellIndex) => ({
+            value: cell,
+            isOpen: false,
+            isPress: false,
+            countNearbyFlags: 0,
+            isFlag: false,
+            coords: { x: cellIndex, y: rowIndex },
+          }))
         );
       });
   }
 
-  decrementCountOfCell(): void {
-    this.countOfCell--;
-  }
-
-  endGame(isWin: boolean) {
+  public endGame(isWin: boolean) {
     this.initVariable(true, isWin);
     this.gameService.changeWin(this.game.id, isWin).subscribe();
     alert(isWin);
   }
 
-  openNearbyCells(start: { x: number; y: number }): void {
+  public changeOpenCell(coords: Coords) {
+    const currentCell = this.cellMap[coords.y][coords.x];
+    if (currentCell.isOpen || currentCell.isFlag) return;
+    currentCell.isOpen = true;
+    this.countOfCell--;
+  }
+
+  public onCellClick(coords: Coords): void {
+    const currentCell = this.cellMap[coords.y][coords.x];
+    this.onPressNearbyCells(coords, false);
+    if (
+      currentCell.value === 0 ||
+      currentCell.value === currentCell.countNearbyFlags
+    )
+      this.changeNearbyCells(coords, this.nearbyOpen);
+    if (currentCell.value === 100) this.endGame(false);
+    this.changeOpenCell(coords);
+  }
+
+  public setFlag(coords: Coords): void {
+    const currentCell = this.cellMap[coords.y][coords.x];
+    if (!currentCell.isOpen) currentCell.isFlag = !currentCell.isFlag;
+    this.changeNearbyCells(
+      coords,
+      this.nearbyFlag.bind(this, currentCell.isFlag)
+    );
+  }
+
+  public onPressNearbyCells(coords: Coords, isPress = true): void {
+    this.changeNearbyCells(coords, this.nearbyPress.bind(this, isPress));
+  }
+
+  private initVariable(isOver: boolean, isWin: boolean): void {
+    this.isOver = isOver;
+    this.isWin = isWin;
+  }
+
+  private changeNearbyCells(
+    start: Coords,
+    strategy: (coords: Coords) => void
+  ): void {
     for (let row = -1; row <= 1; row++) {
       for (let coll = -1; coll <= 1; coll++) {
-        const rowIndex = row + start.y;
-        const collIndex = coll + start.x;
-        if (
-          typeof this.openCells[rowIndex] === 'object' &&
-          typeof this.openCells[rowIndex][collIndex] === 'boolean' &&
-          this.openCells[rowIndex][collIndex] === false
-        ) {
-          this.openCells[rowIndex][collIndex] = true;
-          if (this.game.sapperSchemes.scheme[rowIndex][collIndex] === 0)
-            this.openNearbyCells({ x: collIndex, y: rowIndex });
-        }
+        const currentCell = this.cellMap?.[row + start.y]?.[coll + start.x];
+        if (currentCell)
+          strategy.call(this, {
+            x: currentCell.coords.x,
+            y: currentCell.coords.y,
+          });
       }
     }
+  }
+
+  private nearbyOpen(coords: Coords): void {
+    const currentCell = this.cellMap[coords.y][coords.x];
+    if (currentCell.isOpen) return;
+    this.changeOpenCell(coords);
+    if (currentCell.value === 0)
+      this.changeNearbyCells(coords, this.nearbyOpen);
+  }
+
+  private nearbyPress(isPress: boolean, coords: Coords): void {
+    const currentCell = this.cellMap[coords.y][coords.x];
+    currentCell.isPress = isPress;
+  }
+
+  private nearbyFlag(isFlag: boolean, coords: Coords): void {
+    const currentCell = this.cellMap[coords.y][coords.x];
+    if (isFlag) currentCell.countNearbyFlags++;
+    else currentCell.countNearbyFlags--;
   }
 
   ngOnInit(): void {

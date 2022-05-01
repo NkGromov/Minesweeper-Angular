@@ -12,8 +12,8 @@ export class GameService {
 
   getGame(
     userId: number,
-    width: number = 5,
-    height: number = 5
+    width: number = 10,
+    height: number = 10
   ): Observable<Game> {
     return this.http.post<Game>(
       `${env.apiBase}/games/create`,

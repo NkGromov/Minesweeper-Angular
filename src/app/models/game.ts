@@ -6,5 +6,20 @@ export type Game = {
 
 export type SapperScheme = {
   id: number;
+  countBombs: number;
   scheme: Array<Array<number>>;
+};
+
+export type CellWithState = {
+  value: number;
+  isOpen: boolean;
+  isFlag: boolean;
+  isPress: boolean;
+  countNearbyFlags: number;
+  coords: Coords;
+};
+
+export type Coords = {
+  x: number;
+  y: number;
 };

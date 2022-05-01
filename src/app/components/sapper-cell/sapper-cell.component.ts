@@ -1,4 +1,5 @@
 import { Component, DoCheck, EventEmitter, Input, Output } from '@angular/core';
+import { CellWithState, Coords } from 'src/app/models/game';
 
 @Component({
   selector: 'sapper-cell',
@@ -6,42 +7,35 @@ import { Component, DoCheck, EventEmitter, Input, Output } from '@angular/core';
   styleUrls: ['./sapper-cell.component.sass'],
 })
 export class SapperCellComponent implements DoCheck {
-  @Input() numberCell = 0;
-  @Input() numberRow = 0;
   @Input() isOver = false;
   @Input() isWin = false;
-  @Input() value = 0;
-  @Input() isOpen = false;
-  @Output() endGame = new EventEmitter<boolean>();
-  @Output() decrementCountOfCell = new EventEmitter();
-  @Output() openNearbyCells = new EventEmitter<{ x: number; y: number }>();
-  isHidden = true;
-  isFlag = false;
+  @Input() cell = {} as CellWithState;
+  @Output() onCellClick = new EventEmitter<Coords>();
+  @Output() setFlag = new EventEmitter<Coords>();
+  @Output() changeOpenCell = new EventEmitter<Coords>();
+  @Output() onPressNearbyCells = new EventEmitter<Coords>();
 
   constructor() {}
 
-  changeHiddenCell() {
-    if (!this.isHidden || this.isFlag) return;
-    this.isHidden = false;
-    this.decrementCountOfCell.emit();
-  }
-
-  onCellClick(value: number): void {
-    if (!this.isHidden || this.isFlag) return;
-    this.changeHiddenCell();
-    if (value === 0)
-      this.openNearbyCells.emit({ x: this.numberCell, y: this.numberRow });
-    if (value === 100) this.endGame.emit(false);
-  }
-
-  setFlag(event: any): void {
+  onMouseUp(event: MouseEvent): void {
     event.preventDefault();
-    if (this.isHidden) this.isFlag = !this.isFlag;
+    if (event.button !== 0) return;
+    this.onCellClick.emit(this.cell.coords);
+  }
+
+  onPressNearby(event: MouseEvent): void {
+    event.preventDefault();
+    if (event.button !== 0) return;
+    this.onPressNearbyCells.emit(this.cell.coords);
+  }
+
+  rightClick(event: MouseEvent): void {
+    event.preventDefault();
+    this.setFlag.emit(this.cell.coords);
   }
 
   ngDoCheck(): void {
-    if (this.isOver && !this.isWin && this.value === 100)
-      this.changeHiddenCell();
-    if (this.isOpen) this.onCellClick(this.value);
+    if (this.isOver && !this.isWin && this.cell.value === 100)
+      this.changeOpenCell.emit(this.cell.coords);
   }
 }
