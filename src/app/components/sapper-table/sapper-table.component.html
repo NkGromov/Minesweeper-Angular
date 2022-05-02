@@ -1,15 +1,21 @@
 <div class="table">
-  <div *ngFor="let row of cellMap; let numberRow = index" class="row">
-    <sapper-cell
-      *ngFor="let cell of row; let numberCell = index"
-      [cell]="cell"
-      [isOver]="isOver"
-      [isWin]="isWin"
-      (onCellClick)="onCellClick($event)"
-      (setFlag)="setFlag($event)"
-      (changeOpenCell)="changeOpenCell($event)"
-      (onPressNearbyCells)="onPressNearbyCells($event)"
-    ></sapper-cell>
+  <div>
+    <div class="header">
+      <span class="counts">{{ countBombs }}</span>
+      <span class="counts">{{ ("00" + score).slice(-3) }}</span>
+    </div>
+    <div *ngFor="let row of cellMap; let numberRow = index" class="row">
+      <sapper-cell
+        *ngFor="let cell of row; let numberCell = index"
+        [cell]="cell"
+        [isOver]="isOver"
+        [isWin]="isWin"
+        (onCellClick)="onCellClick($event)"
+        (setFlag)="setFlag($event)"
+        (changeOpenCell)="changeOpenCell($event)"
+        (onPressNearbyCells)="onPressNearbyCells($event)"
+      ></sapper-cell>
+    </div>
+    <button class="button" (click)="startGame()">Обновить</button>
   </div>
-  <button class="button" (click)="startGame()">Обновить</button>
 </div>

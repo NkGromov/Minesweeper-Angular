@@ -1,4 +1,5 @@
 import { Component, DoCheck, EventEmitter, Input, Output } from '@angular/core';
+import { bombNumber } from 'src/app/config/game';
 import { CellWithState, Coords } from 'src/app/models/game';
 
 @Component({
@@ -14,7 +15,7 @@ export class SapperCellComponent implements DoCheck {
   @Output() setFlag = new EventEmitter<Coords>();
   @Output() changeOpenCell = new EventEmitter<Coords>();
   @Output() onPressNearbyCells = new EventEmitter<Coords>();
-
+  readonly bombNumber = bombNumber;
   constructor() {}
 
   onMouseUp(event: MouseEvent): void {
@@ -35,7 +36,14 @@ export class SapperCellComponent implements DoCheck {
   }
 
   ngDoCheck(): void {
-    if (this.isOver && !this.isWin && this.cell.value === 100)
+    if (this.isOver && !this.isWin && this.cell.value === this.bombNumber)
       this.changeOpenCell.emit(this.cell.coords);
+    if (
+      this.isOver &&
+      this.isWin &&
+      this.cell.value === this.bombNumber &&
+      !this.cell.isFlag
+    )
+      this.setFlag.emit(this.cell.coords);
   }
 }

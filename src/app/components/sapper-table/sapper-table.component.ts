@@ -1,4 +1,5 @@
 import { Component, DoCheck, OnInit } from '@angular/core';
+import { bombNumber } from 'src/app/config/game';
 import { CellWithState, Coords, Game } from 'src/app/models/game';
 import { GameService } from 'src/app/services/game.service';
 import { UserService } from 'src/app/services/user.service';
@@ -9,11 +10,14 @@ import { UserService } from 'src/app/services/user.service';
   styleUrls: ['./sapper-table.component.sass'],
 })
 export class SapperTableComponent implements OnInit, DoCheck {
+  private timerId: ReturnType<typeof setInterval> = setInterval(() => {}, 0);
+  countBombs = 0;
   game = {} as Game;
   isOver = false;
   isWin = false;
   countOfCell = 100;
   cellMap = [] as Array<Array<CellWithState>>;
+  score = 0;
 
   constructor(
     public gameService: GameService,
@@ -21,13 +25,13 @@ export class SapperTableComponent implements OnInit, DoCheck {
   ) {}
 
   public startGame(): void {
-    this.initVariable(false, false);
     this.countOfCell = 100;
     this.gameService
       .getGame(this.userService.userId)
       .subscribe((response: Game) => {
         this.game = response;
         this.countOfCell = 10 * 10 - response.sapperSchemes.countBombs;
+        this.countBombs = response.sapperSchemes.countBombs;
         this.cellMap = this.game.sapperSchemes.scheme.map((row, rowIndex) =>
           row.map((cell, cellIndex) => ({
             value: cell,
@@ -38,12 +42,15 @@ export class SapperTableComponent implements OnInit, DoCheck {
             coords: { x: cellIndex, y: rowIndex },
           }))
         );
+        this.initVariable(false, false);
+        this.setTimer(true);
       });
   }
 
   public endGame(isWin: boolean) {
     this.initVariable(true, isWin);
     this.gameService.changeWin(this.game.id, isWin).subscribe();
+    this.setTimer(false);
     alert(isWin);
   }
 
@@ -57,18 +64,21 @@ export class SapperTableComponent implements OnInit, DoCheck {
   public onCellClick(coords: Coords): void {
     const currentCell = this.cellMap[coords.y][coords.x];
     this.onPressNearbyCells(coords, false);
+    if (currentCell.isFlag) return;
     if (
       currentCell.value === 0 ||
       currentCell.value === currentCell.countNearbyFlags
     )
       this.changeNearbyCells(coords, this.nearbyOpen);
-    if (currentCell.value === 100) this.endGame(false);
+    if (currentCell.value === bombNumber) this.endGame(false);
     this.changeOpenCell(coords);
   }
 
   public setFlag(coords: Coords): void {
     const currentCell = this.cellMap[coords.y][coords.x];
     if (!currentCell.isOpen) currentCell.isFlag = !currentCell.isFlag;
+    if (currentCell.isFlag) this.countBombs--;
+    else this.countBombs++;
     this.changeNearbyCells(
       coords,
       this.nearbyFlag.bind(this, currentCell.isFlag)
@@ -82,6 +92,14 @@ export class SapperTableComponent implements OnInit, DoCheck {
   private initVariable(isOver: boolean, isWin: boolean): void {
     this.isOver = isOver;
     this.isWin = isWin;
+  }
+
+  private setTimer(isStarted: boolean): void {
+    clearInterval(this.timerId);
+    if (isStarted) {
+      this.score = 0;
+      this.timerId = setInterval(() => this.score++, 1000);
+    }
   }
 
   private changeNearbyCells(
@@ -125,5 +143,14 @@ export class SapperTableComponent implements OnInit, DoCheck {
 
   ngDoCheck(): void {
     if (this.countOfCell === 0 && !this.isOver) this.endGame(true);
+    if (
+      this.cellMap.some((row) =>
+        row.some((cell) => cell.value === bombNumber && cell.isOpen)
+      ) &&
+      !this.isOver
+    )
+      this.endGame(false);
+
+    console.log(this.cellMap);
   }
 }
