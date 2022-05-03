@@ -75,7 +75,8 @@ export class SapperTableComponent implements OnInit, DoCheck {
 
   public setFlag(coords: Coords): void {
     const currentCell = this.cellMap[coords.y][coords.x];
-    if (!currentCell.isOpen) currentCell.isFlag = !currentCell.isFlag;
+    if (currentCell.isOpen) return;
+    currentCell.isFlag = !currentCell.isFlag;
     if (currentCell.isFlag) this.countBombs--;
     else this.countBombs++;
     this.changeNearbyCells(
