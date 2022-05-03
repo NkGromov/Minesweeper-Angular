@@ -1,10 +1,10 @@
 <button
-  class="sapperCell"
+  class="cell"
   [ngClass]="{
-    'sapperCell--active': cell.isOpen && cell.value !== bombNumber,
-    'sapperCell--fail': cell.isOpen && cell.value === bombNumber,
-    'sapperCell--flag': !cell.isOpen && cell.isFlag,
-    'sapperCell--press': !cell.isOpen && !cell.isFlag && cell.isPress
+    'cell--active': cell.isOpen && cell.value !== bombNumber,
+    'cell--fail': cell.isOpen && cell.value === bombNumber,
+    'cell--flag': !cell.isOpen && cell.isFlag,
+    'cell--press': !cell.isOpen && !cell.isFlag && cell.isPress
   }"
   (mouseup)="onMouseUp($event)"
   (mousedown)="cell.isOpen && cell.value > 0 && onPressNearby($event)"

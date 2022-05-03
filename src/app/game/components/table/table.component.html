@@ -7,7 +7,7 @@
       }}</span>
     </div>
     <div *ngFor="let row of cellMap; let numberRow = index" class="row">
-      <sapper-cell
+      <cell
         *ngFor="let cell of row; let numberCell = index"
         [cell]="cell"
         [isOver]="isOver"
@@ -16,7 +16,7 @@
         (setFlag)="setFlag($event)"
         (changeOpenCell)="changeOpenCell($event)"
         (onPressNearbyCells)="onPressNearbyCells($event)"
-      ></sapper-cell>
+      ></cell>
     </div>
     <div class="buttonWrapper">
       <app-button (onClick)="startGame()">Обновить</app-button>

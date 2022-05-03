@@ -1,13 +1,13 @@
 import { Component, DoCheck, EventEmitter, Input, Output } from '@angular/core';
 import { bombNumber } from 'src/app/config/game';
-import { CellWithState, Coords } from 'src/app/models/game';
+import { CellWithState, Coords } from 'src/app/game/models/game';
 
 @Component({
-  selector: 'sapper-cell',
-  templateUrl: './sapper-cell.component.html',
-  styleUrls: ['./sapper-cell.component.sass'],
+  selector: 'cell',
+  templateUrl: './cell.component.html',
+  styleUrls: ['./cell.component.sass'],
 })
-export class SapperCellComponent implements DoCheck {
+export class CellComponent implements DoCheck {
   @Input() isOver = false;
   @Input() isWin = false;
   @Input() cell = {} as CellWithState;

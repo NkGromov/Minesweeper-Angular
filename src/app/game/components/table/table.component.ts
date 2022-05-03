@@ -1,15 +1,15 @@
 import { Component, DoCheck, OnInit } from '@angular/core';
 import { bombNumber } from 'src/app/config/game';
-import { CellWithState, Coords, Game } from 'src/app/models/game';
-import { GameService } from 'src/app/services/game.service';
+import { CellWithState, Coords, Game } from 'src/app/game/models/game';
+import { GameService } from 'src/app/game/services/game.service';
 import { UserService } from 'src/app/services/user.service';
 
 @Component({
-  selector: 'sapper-table',
-  templateUrl: './sapper-table.component.html',
-  styleUrls: ['./sapper-table.component.sass'],
+  selector: 'game-table',
+  templateUrl: './table.component.html',
+  styleUrls: ['./table.component.sass'],
 })
-export class SapperTableComponent implements OnInit, DoCheck {
+export class TableComponent implements OnInit, DoCheck {
   private timerId: ReturnType<typeof setInterval> = setInterval(() => {}, 0);
   countBombs = 0;
   game = {} as Game;
@@ -151,6 +151,6 @@ export class SapperTableComponent implements OnInit, DoCheck {
     )
       this.endGame(false);
 
-    console.log(this.cellMap);
+    // console.log(this.cellMap);
   }
 }
