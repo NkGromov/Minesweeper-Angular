@@ -2,7 +2,9 @@
   <div>
     <div class="header">
       <span class="counts">{{ countBombs }}</span>
-      <span class="counts">{{ ("00" + score).slice(-3) }}</span>
+      <span class="counts">{{
+        score < 100 ? ("00" + score).slice(-3) : score
+      }}</span>
     </div>
     <div *ngFor="let row of cellMap; let numberRow = index" class="row">
       <sapper-cell
@@ -16,6 +18,12 @@
         (onPressNearbyCells)="onPressNearbyCells($event)"
       ></sapper-cell>
     </div>
-    <button class="button" (click)="startGame()">Обновить</button>
+    <div class="buttonWrapper">
+      <app-button (onClick)="startGame()">Обновить</app-button>
+    </div>
   </div>
+  <modal [title]="isWin ? 'Вы выйграли' : 'Вы проиграли'" [isOpen]="isOver">
+    <span class="score">Счет: </span>
+    <span class="score">{{ score }}</span>
+  </modal>
 </div>

@@ -1,0 +1,11 @@
+<div class="modalWrapper" *ngIf="isOpen">
+  <div class="modal">
+    <div class="header">
+      <h2 class="title">{{ title }}</h2>
+    </div>
+    <div class="body"><ng-content></ng-content></div>
+    <div class="footer">
+      <app-button (onClick)="close()">Ок</app-button>
+    </div>
+  </div>
+</div>

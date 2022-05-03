@@ -51,7 +51,6 @@ export class SapperTableComponent implements OnInit, DoCheck {
     this.initVariable(true, isWin);
     this.gameService.changeWin(this.game.id, isWin).subscribe();
     this.setTimer(false);
-    alert(isWin);
   }
 
   public changeOpenCell(coords: Coords) {
