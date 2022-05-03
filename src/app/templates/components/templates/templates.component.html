@@ -1,0 +1,10 @@
+<div class="wrapper">
+  <a
+    class="template"
+    *ngFor="let template of templates"
+    routerLink="/game"
+    [queryParams]="{ width: template.size[0], height: template.size[1] }"
+  >
+    <h1 class="title">{{ template?.name }}</h1>
+  </a>
+</div>

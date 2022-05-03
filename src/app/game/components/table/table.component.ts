@@ -1,6 +1,13 @@
 import { Component, DoCheck, OnInit } from '@angular/core';
+import { ActivatedRoute } from '@angular/router';
+import { map, filter, scan } from 'rxjs/operators';
 import { bombNumber } from 'src/app/config/game';
-import { CellWithState, Coords, Game } from 'src/app/game/models/game';
+import {
+  CellWithState,
+  Coords,
+  Game,
+  QueryParams,
+} from 'src/app/game/models/game';
 import { GameService } from 'src/app/game/services/game.service';
 import { UserService } from 'src/app/services/user.service';
 
@@ -18,19 +25,21 @@ export class TableComponent implements OnInit, DoCheck {
   countOfCell = 100;
   cellMap = [] as Array<Array<CellWithState>>;
   score = 0;
-
+  params = {} as QueryParams;
   constructor(
     public gameService: GameService,
-    private userService: UserService
+    public userService: UserService,
+    private route: ActivatedRoute
   ) {}
 
   public startGame(): void {
     this.countOfCell = 100;
+    const { width, height } = this.params;
     this.gameService
-      .getGame(this.userService.userId)
+      .getGame(this.userService.userId, +width, +height)
       .subscribe((response: Game) => {
         this.game = response;
-        this.countOfCell = 10 * 10 - response.sapperSchemes.countBombs;
+        this.countOfCell = +width * +height - response.sapperSchemes.countBombs;
         this.countBombs = response.sapperSchemes.countBombs;
         this.cellMap = this.game.sapperSchemes.scheme.map((row, rowIndex) =>
           row.map((cell, cellIndex) => ({
@@ -138,6 +147,11 @@ export class TableComponent implements OnInit, DoCheck {
   }
 
   ngOnInit(): void {
+    this.route.queryParams.subscribe((params) => {
+      this.params.width = params['width'] || 10;
+      this.params.height = params['height'] || 10;
+    });
+
     this.startGame();
   }
 
@@ -150,7 +164,5 @@ export class TableComponent implements OnInit, DoCheck {
       !this.isOver
     )
       this.endGame(false);
-
-    // console.log(this.cellMap);
   }
 }

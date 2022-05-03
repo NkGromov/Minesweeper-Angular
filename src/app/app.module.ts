@@ -8,6 +8,7 @@ import { CellComponent } from './game/components/cell/cell.component';
 import { TableComponent } from './game/components/table/table.component';
 import { ButtonComponent } from './shared/button/button.component';
 import { ModalComponent } from './shared/modal/modal.component';
+import { TemplatesComponent } from './templates/components/templates/templates.component';
 
 @NgModule({
   declarations: [
@@ -16,6 +17,7 @@ import { ModalComponent } from './shared/modal/modal.component';
     CellComponent,
     ModalComponent,
     ButtonComponent,
+    TemplatesComponent,
   ],
   imports: [BrowserModule, AppRoutingModule, HttpClientModule],
   providers: [],
