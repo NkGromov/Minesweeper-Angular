@@ -28,7 +28,7 @@ export class GameService {
     );
   }
 
-  changeWin(gameId: number, isWin: boolean): Observable<Game> {
+  changeWin(gameId: number, isWin: boolean, score: number): Observable<Game> {
     return this.http.put<Game>(
       `${env.apiBase}/games/win`,
       {},
@@ -36,6 +36,7 @@ export class GameService {
         params: {
           gameId,
           isWin,
+          score
         },
       }
     );

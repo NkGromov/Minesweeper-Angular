@@ -58,7 +58,7 @@ export class TableComponent implements OnInit, DoCheck {
 
   public endGame(isWin: boolean) {
     this.initVariable(true, isWin);
-    this.gameService.changeWin(this.game.id, isWin).subscribe();
+    this.gameService.changeWin(this.game.id, isWin, this.score).subscribe();
     this.setTimer(false);
   }
 
